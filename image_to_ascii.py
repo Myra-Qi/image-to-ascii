@@ -3,7 +3,7 @@ from PIL import Image
 # ====== 你只需要改这里 ======
 
 image_file = "naiwa.png"   # 图片文件名
-width = 80                # ASCII 最终宽度
+width = 160                 # ASCII 最终宽度
 
 # 从亮到暗
 chars = "@%#*+=-:. "
@@ -44,7 +44,7 @@ for y in range(height):
         else:
             index = brightness * (len(chars) - 1) // 255
             result += chars[index]
-            
+
     result += "\n"
 
 
