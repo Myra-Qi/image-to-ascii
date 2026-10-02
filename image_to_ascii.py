@@ -38,10 +38,13 @@ for y in range(height):
 
         # 亮度 0~255
         # 转换成 chars 的位置
-        index = brightness * (len(chars) - 1) // 255
-
-        result += chars[index]
-
+                # 白色背景直接变成空格
+        if brightness > 240:
+            result += " "
+        else:
+            index = brightness * (len(chars) - 1) // 255
+            result += chars[index]
+            
     result += "\n"
 
 
