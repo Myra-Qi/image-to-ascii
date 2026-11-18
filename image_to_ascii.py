@@ -9,13 +9,25 @@ def image_to_ascii(image_data: bytes, wight: int = 160) -> str:
 
     image = image.resize((width, height)).convert("L");
 
+    chars = "@%#*+=-:.";
+    result = [];
 
-    """
-    将图片转换为 ASCII 字符画
-    :param image_data: 图片的二进制数据
-    :param wight: 输出的宽度，默认 160
-    :return: ASCII 字符画字符串
-    """
+    for y in range(height):
+        line = []
+
+        for x in range(width):
+            brightness = image.getpixel((x, y))
+
+            if brightness > 240:
+                line.append(" ")
+            else:
+                index = brightness * (len(chars) - 1) // 255
+                line.append(chars[index])
+
+        result.append("".join(line))
+
+    return "\n".join(result)
+
     # 打开图片
     image = Image.open(BytesIO(image_data))
 
