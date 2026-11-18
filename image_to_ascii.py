@@ -1,119 +1,62 @@
-from PIL import Image
 from io import BytesIO
+from pathlib import Path
+import sys
 
-def image_to_ascii(image_data: bytes, wight: int = 160) -> str:
-    image =Image.open(BytesIO(image_data))
+from PIL import Image
 
-    old_width,old_height = image.size;
-    height = max(1, int(old_height / old_width * width * 0.5) );
 
-    image = image.resize((width, height)).convert("L");
+CHARS = "@%#*+=-:. "
 
-    chars = "@%#*+=-:.";
-    result = [];
 
+def image_to_ascii(image_data: bytes, width: int = 160) -> str:
+    """Convert image bytes into an ASCII-art string."""
+    if width < 20 or width > 300:
+        raise ValueError("width must be between 20 and 300")
+
+    with Image.open(BytesIO(image_data)) as source:
+        old_width, old_height = source.size
+        if old_width <= 0 or old_height <= 0:
+            raise ValueError("image dimensions must be positive")
+
+        height = max(1, int(old_height / old_width * width * 0.5))
+        image = source.convert("L").resize((width, height))
+
+    result = []
     for y in range(height):
         line = []
-
         for x in range(width):
             brightness = image.getpixel((x, y))
 
             if brightness > 240:
                 line.append(" ")
             else:
-                index = brightness * (len(chars) - 1) // 255
-                line.append(chars[index])
+                index = brightness * (len(CHARS) - 1) // 255
+                line.append(CHARS[index])
 
-        result.append("".join(line))
+        result.append("".join(line).rstrip())
 
     return "\n".join(result)
 
-    # 打开图片
-    image = Image.open(BytesIO(image_data))
 
-    # 原来的宽高
-    old_width, old_height = image.size
+def main() -> None:
+    if len(sys.argv) < 2:
+        print("Usage: python3 image_to_ascii.py IMAGE [WIDTH]")
+        raise SystemExit(1)
 
-    # 字符不是正方形，所以高度要缩小一些
-    height = int(old_height / old_width * wight * 0.5)
+    image_path = Path(sys.argv[1])
+    if not image_path.is_file():
+        print(f"Image not found: {image_path}")
+        raise SystemExit(1)
 
-    # 缩小图片
-    image = image.resize((wight, height))
+    try:
+        width = int(sys.argv[2]) if len(sys.argv) >= 3 else 160
+        ascii_art = image_to_ascii(image_path.read_bytes(), width)
+    except (ValueError, OSError) as error:
+        print(f"Could not convert image: {error}")
+        raise SystemExit(1)
 
-    # 转成灰度
-    image = image.convert("L")
-
-    # 从亮到暗
-    chars = "@%#*+=-:. "
-
-    # 生成 ASCII
-    result = ""
-
-    for y in range(height):
-        for x in range(wight):
-
-            # 获取这个位置的亮度
-            brightness = image.getpixel((x, y))
-
-            # 亮度 0~255
-            # 转换成 chars 的位置
-            if brightness > 240:
-                result += " "
-            else:
-                index = brightness * (len(chars) - 1) // 255
-                result += chars[index]
-
-        result += "\n"
-
-    return result
-
-# 从亮到暗
-chars = "@%#*+=-:. "
-
-# ============================
+    sys.stdout.write(ascii_art)
 
 
-# 打开图片
-image = Image.open(image_file)
-
-# 原来的宽高
-old_width, old_height = image.size
-
-# 字符不是正方形，所以高度要缩小一些
-height = int(old_height / old_width * width * 0.5)
-
-# 缩小图片
-image = image.resize((width, height))
-
-# 转成灰度
-image = image.convert("L")
-
-
-# 生成 ASCII
-result = ""
-
-for y in range(height):
-    for x in range(width):
-
-        # 获取这个位置的亮度
-        brightness = image.getpixel((x, y))
-
-        # 亮度 0~255
-        # 转换成 chars 的位置
-                # 白色背景直接变成空格
-        if brightness > 240:
-            result += " "
-        else:
-            index = brightness * (len(chars) - 1) // 255
-            result += chars[index]
-
-    result += "\n"
-
-
-# save
-with open("ascii.txt", "w", encoding="utf-8") as file:
-    file.write(result)
-
-print("success!")
-print(f"width：{width}")
-print("file：ascii.txt")
+if __name__ == "__main__":
+    main()
