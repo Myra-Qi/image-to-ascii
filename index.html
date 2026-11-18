@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="在浏览器中将图片转换为 ASCII 字符画，图片不会上传。"
+    />
+    <title>ASCII 图片转换器</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <p class="eyebrow">LOCAL IMAGE TOOL</p>
+        <h1>图片转 ASCII</h1>
+        <p class="subtitle">图片只在浏览器中处理，不会上传或保存到服务器。</p>
+      </header>
+
+      <section class="workspace" aria-label="ASCII 图片转换工具">
+        <aside class="controls">
+          <label class="drop-zone" id="dropZone" for="fileInput">
+            <input id="fileInput" type="file" accept="image/*" />
+            <span class="drop-icon" aria-hidden="true">↑</span>
+            <strong id="dropTitle">选择图片</strong>
+            <span id="dropHint">或拖放图片到这里</span>
+          </label>
+
+          <div class="field">
+            <div class="field-heading">
+              <label for="widthInput">输出宽度</label>
+              <output id="widthOutput" for="widthInput">160 字符</output>
+            </div>
+            <input
+              id="widthInput"
+              type="range"
+              min="20"
+              max="300"
+              step="10"
+              value="160"
+            />
+          </div>
+
+          <div class="field">
+            <label for="charSet">字符集</label>
+            <select id="charSet">
+              <option value="@%#*+=-:. ">经典深色（@ 最深）</option>
+              <option value=" .:-=+*#%@">经典浅色（空格最亮）</option>
+              <option value="█▓▒░ ">方块</option>
+              <option value="01 ">二进制</option>
+            </select>
+          </div>
+
+          <label class="toggle-row" for="invertInput">
+            <span>
+              <strong>反转亮度</strong>
+              <small>适合深色或浅色背景</small>
+            </span>
+            <input id="invertInput" type="checkbox" />
+          </label>
+
+          <div class="actions">
+            <button id="copyButton" class="button primary" type="button" disabled>
+              复制结果
+            </button>
+            <button id="downloadButton" class="button" type="button" disabled>
+              下载文本
+            </button>
+          </div>
+        </aside>
+
+        <section class="preview" aria-live="polite">
+          <div class="preview-heading">
+            <span>ASCII 预览</span>
+            <span id="sizeLabel">等待图片</span>
+          </div>
+          <div class="preview-body" id="previewBody">
+            <div class="empty-state" id="emptyState">
+              <span class="empty-mark" aria-hidden="true">Aa</span>
+              <p>选择一张图片开始转换</p>
+            </div>
+            <pre id="asciiOutput" hidden></pre>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <canvas id="imageCanvas" hidden></canvas>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+ascii.txt
+*_ascii.txt
+a_*.txt
