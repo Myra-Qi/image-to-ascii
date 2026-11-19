@@ -1,0 +1,1 @@
+A tool that runs in the browser to convert images into ASCII art.
