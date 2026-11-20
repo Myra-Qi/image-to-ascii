@@ -7,6 +7,19 @@ from PIL import Image
 
 CHARS = "@%#*+=-:. "
 
+def adjust_brightness(
+    brightness: int,
+    gamma: float = 1.0,
+    contrast: float = 1.0,
+) -> int:
+    normalized = brightness / 255
+
+    corrected = normalized ** gamma
+
+    adjusted = (corrected - 0.5) * contrast + 0.5
+
+    return round(max(0, min(1, adjusted)) * 255)
+
 
 def image_to_ascii(image_data: bytes, width: int = 160) -> str:
     """Convert image bytes into an ASCII-art string."""
