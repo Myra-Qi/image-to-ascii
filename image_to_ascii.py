@@ -7,6 +7,13 @@ from PIL import Image
 
 CHARS = "@%#*+=-:. "
 
+def image_to_ascii(
+    image_data: bytes,
+    width: int = 160,
+    gamma: float = 1.0,
+    contrast: float = 1.0,
+) -> str:
+
 def adjust_brightness(
     brightness: int,
     gamma: float = 1.0,
@@ -38,7 +45,11 @@ def image_to_ascii(image_data: bytes, width: int = 160) -> str:
     for y in range(height):
         line = []
         for x in range(width):
-            brightness = image.getpixel((x, y))
+            brightness = adjust_brightness(
+            image.getpixel((x, y)),
+            gamma,
+            contrast,
+)
 
             if brightness > 240:
                 line.append(" ")
