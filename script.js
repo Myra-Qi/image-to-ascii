@@ -13,6 +13,7 @@ const emptyState = document.querySelector("#emptyState");
 const sizeLabel = document.querySelector("#sizeLabel");
 const canvas = document.querySelector("#imageCanvas");
 const toast = document.querySelector("#toast");
+const replaceButton = document.querySelector("#replaceButton");
 
 let currentFile = null;
 let currentAscii = "";
@@ -48,6 +49,33 @@ function loadImage(file) {
     image.src = url;
   });
 }
+
+async function processFile(file) {
+  if (!file) return;
+
+  try {
+    const image = await loadImage(file);
+    currentFile = file;
+
+    dropTitle.textContent = "选择另一张图片";
+    dropHint.textContent = `已选择：${file.name}`;
+
+    convertImage(image);
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
+fileInput.addEventListener("change", () => {
+  processFile(fileInput.files[0]);
+
+  // 清空文件值，后续可以再次选择同一张图片
+  fileInput.value = "";
+});
+
+replaceButton.addEventListener("click", () => {
+  fileInput.click();
+});
 
 function convertImage(image) {
   const width = Number(widthInput.value);
