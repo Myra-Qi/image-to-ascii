@@ -332,3 +332,7 @@ select:focus {
     min-height: 370px;
   }
 }
+
+[hidden] {
+  display: none !important;
+}
