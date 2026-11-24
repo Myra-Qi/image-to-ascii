@@ -1,3 +1,4 @@
+
 from io import BytesIO
 from pathlib import Path
 import sys
@@ -7,12 +8,6 @@ from PIL import Image
 
 CHARS = "@%#*+=-:. "
 
-def image_to_ascii(
-    image_data: bytes,
-    width: int = 160,
-    gamma: float = 1.0,
-    contrast: float = 1.0,
-) -> str:
 
 def adjust_brightness(
     brightness: int,
@@ -22,34 +17,52 @@ def adjust_brightness(
     normalized = brightness / 255
 
     corrected = normalized ** gamma
-
     adjusted = (corrected - 0.5) * contrast + 0.5
 
     return round(max(0, min(1, adjusted)) * 255)
 
 
-def image_to_ascii(image_data: bytes, width: int = 160) -> str:
+def image_to_ascii(
+    image_data: bytes,
+    width: int = 160,
+    gamma: float = 1.0,
+    contrast: float = 1.0,
+) -> str:
     """Convert image bytes into an ASCII-art string."""
+
     if width < 20 or width > 300:
         raise ValueError("width must be between 20 and 300")
 
+    if gamma <= 0:
+        raise ValueError("gamma must be greater than 0")
+
+    if contrast < 0:
+        raise ValueError("contrast must not be negative")
+
     with Image.open(BytesIO(image_data)) as source:
         old_width, old_height = source.size
+
         if old_width <= 0 or old_height <= 0:
             raise ValueError("image dimensions must be positive")
 
-        height = max(1, int(old_height / old_width * width * 0.5))
+        height = max(
+            1,
+            int(old_height / old_width * width * 0.5)
+        )
+
         image = source.convert("L").resize((width, height))
 
     result = []
+
     for y in range(height):
         line = []
+
         for x in range(width):
             brightness = adjust_brightness(
-            image.getpixel((x, y)),
-            gamma,
-            contrast,
-)
+                image.getpixel((x, y)),
+                gamma,
+                contrast,
+            )
 
             if brightness > 240:
                 line.append(" ")
@@ -68,13 +81,19 @@ def main() -> None:
         raise SystemExit(1)
 
     image_path = Path(sys.argv[1])
+
     if not image_path.is_file():
         print(f"Image not found: {image_path}")
         raise SystemExit(1)
 
     try:
         width = int(sys.argv[2]) if len(sys.argv) >= 3 else 160
-        ascii_art = image_to_ascii(image_path.read_bytes(), width)
+
+        ascii_art = image_to_ascii(
+            image_path.read_bytes(),
+            width,
+        )
+
     except (ValueError, OSError) as error:
         print(f"Could not convert image: {error}")
         raise SystemExit(1)
